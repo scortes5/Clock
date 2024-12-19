@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 import datetime
 from countdown import CountDown
 from stopwatch import StopWatch
+from alarm import Alarm
 
 
 class HomeView(QtWidgets.QMainWindow):
@@ -41,6 +42,13 @@ class HomeView(QtWidgets.QMainWindow):
         self.stopwatch_button.clicked.connect(self.show_stopwatch)
         layout.addWidget(self.stopwatch_button)
 
+        # Alarm button
+        self.alarm_button = QtWidgets.QPushButton("Alarma")
+        self.alarm_button.setStyleSheet("font-size: 20px; background-color: rgba(0,0,0,0.3); color: white; border-radius: 5px; padding: 10px;")
+        self.alarm_button.clicked.connect(self.show_alarm)
+        layout.addWidget(self.alarm_button)
+
+
     def update_chile_time(self):
         chile_tz = datetime.timezone(datetime.timedelta(hours=-3))  # Chile timezone (CLT)
         current_chile_time = datetime.datetime.now(chile_tz).strftime("%H:%M:%S")
@@ -58,12 +66,21 @@ class HomeView(QtWidgets.QMainWindow):
         self.stopwatch_window.back_to_home.connect(self.show_home)
         self.stopwatch_window.show()
 
+    def show_alarm(self):
+        self.hide()
+        self.alarm_window = Alarm()
+        self.alarm_window.back_to_home.connect(self.show_home)
+        self.alarm_window.show()
+
 
     def show_home(self):
         try:
             self.countdown_window.close()
-        except: 
-            self.stopwatch_window.close()
+        except Exception:
+            try:
+                self.stopwatch_window.close()
+            except Exception:
+                self.alarm_window.close()
         finally:   
             self.show()  
 
